@@ -11,19 +11,15 @@ figure; hold on;
 %               2D plot, using the option 'k+' for the positive
 %               examples and 'ko' for the negative examples.
 %
-
-
-
-
-
-
-
-
-
+pos = find(y == 1);
+neg = find(y == 0);
+plot(X(pos, 1), X(pos, 2), 'k+','LineWidth', 3, 'MarkerSize', 8)
+hold on
+plot(X(neg, 1), X(neg, 2), 'ko', 'MarkerFaceColor', 'y','MarkerSize', 8)
+% ============================================================
+ylabel('Profit in $10,000s')
+xlabel('Population of City in 10,000s')
 % =========================================================================
-
-
-
 hold off;
 
 end
