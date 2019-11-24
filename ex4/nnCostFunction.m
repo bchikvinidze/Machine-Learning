@@ -1,34 +1,34 @@
-function [J grad] = nnCostFunction(nn_params, ...
-                                   input_layer_size, ...
-                                   hidden_layer_size, ...
-                                   num_labels, ...
+function [J grad] = nnCostFunction(nn, ... %nn_params
+                                   il, ... %input_layer_size
+                                   hl, ... %hidden_layer_size
+                                   nl, ... %num_labels
                                    X, y, lambda)
 %NNCOSTFUNCTION Implements the neural network cost function for a two layer
 %neural network which performs classification
-%   [J grad] = NNCOSTFUNCTON(nn_params, hidden_layer_size, num_labels, ...
+%   [J grad] = NNCOSTFUNCTON(nn, hl, nl, ...
 %   X, y, lambda) computes the cost and gradient of the neural network. The
 %   parameters for the neural network are "unrolled" into the vector
-%   nn_params and need to be converted back into the weight matrices. 
+%   nn and need to be converted back into the weight matrices. 
 % 
 %   The returned parameter grad should be a "unrolled" vector of the
 %   partial derivatives of the neural network.
 %
 
-% Reshape nn_params back into the parameters Theta1 and Theta2, the weight matrices
+% Reshape nn back into the parameters Theta1 and Theta2, the weight matrices
 % for our 2 layer neural network
-Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
-                 hidden_layer_size, (input_layer_size + 1));
+t1 = reshape(nn(1:hl * (il + 1)), ...
+                 hl, (il + 1));
 
-Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):end), ...
-                 num_labels, (hidden_layer_size + 1));
+t2 = reshape(nn((1 + (hl * (il + 1))):end), ...
+                 nl, (hl + 1));
 
 % Setup some useful variables
 m = size(X, 1);
          
 % You need to return the following variables correctly 
 J = 0;
-Theta1_grad = zeros(size(Theta1));
-Theta2_grad = zeros(size(Theta2));
+Theta1_grad = zeros(size(t1));
+Theta2_grad = zeros(size(t2));
 
 % ====================== YOUR CODE HERE ======================
 % Instructions: You should complete the code by working through the
@@ -62,24 +62,36 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+%Squared terms to be used in regularization part of J:
+squared_1 = t1.^2;
+squared_2 = t2.^2;
 
+%forwardpropagation steps:
+a1 = [ones(m, 1) X];
+h1 = sigmoid(a1 * t1');
+a2 = [ones(m, 1) h1];
+h2 = sigmoid(a2 * t2');
+a3 = h2;
+yv = [1:nl] == y;
+%X_h1 = [ones(m, 1) h1];
 
+%backpropagation:
+d_3 = a3 - yv;
+d_2 = (d_3*t2(:,2:end)) .* sigmoidGradient(a1*t1');
+delta_2 = d_3'*a2; 
+delta_1 = d_2'*a1;
 
+%Cost function:
+J = 1/m * sum(sum(-yv.*log(h2) - (1-yv).*log(1-h2))) + ...
+    lambda/(2*m)*(sum(sum(squared_1(:,2:end))) + sum(sum(squared_2(:,2:end))));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%Gradient calculation:
+t1(:,1) = 0;
+t2(:,1) = 0;
+t1 = t1 * (lambda/m);
+t2 = t2 * (lambda/m);
+Theta1_grad = 1/m * delta_1 + t1;
+Theta2_grad = 1/m * delta_2 + t2;
 % -------------------------------------------------------------
 
 % =========================================================================
