@@ -5,15 +5,12 @@ function word_indices = processEmail(email_contents)
 %   the body of an email and returns a list of indices of the 
 %   words contained in the email. 
 %
-
 % Load Vocabulary
 vocabList = getVocabList();
 
 % Init return value
 word_indices = [];
-
 % ========================== Preprocess Email ===========================
-
 % Find the Headers ( \n\n and remove )
 % Uncomment the following lines if you are working with raw emails with the
 % full headers
@@ -96,19 +93,12 @@ while ~isempty(email_contents)
     % Note: You can use strcmp(str1, str2) to compare two strings (str1 and
     %       str2). It will return 1 only if the two strings are equivalent.
     %
-
-
-
-
-
-
-
-
-
-
+    [val, index] = max(strcmp(vocabList, str));
+    if(val == 0) 
+        continue;
+    end
+    word_indices = [word_indices; index];
     % =============================================================
-
-
     % Print to screen, ensuring that the output lines are not too long
     if (l + length(str) + 1) > 78
         fprintf('\n');
@@ -116,10 +106,7 @@ while ~isempty(email_contents)
     end
     fprintf('%s ', str);
     l = l + length(str) + 1;
-
 end
-
 % Print footer
 fprintf('\n\n=========================\n');
-
 end
