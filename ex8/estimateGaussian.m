@@ -6,7 +6,6 @@ function [mu sigma2] = estimateGaussian(X)
 %   The output is an n-dimensional vector mu, the mean of the data set
 %   and the variances sigma^2, an n x 1 vector
 % 
-
 % Useful variables
 [m, n] = size(X);
 
@@ -20,17 +19,7 @@ sigma2 = zeros(n, 1);
 %               the data for the i-th feature and sigma2(i)
 %               should contain variance of the i-th feature.
 %
-
-
-
-
-
-
-
-
-
-
+mu = mean(X);
+sigma2 = 1/m * sum((X-mu).^2);
 % =============================================================
-
-
 end
